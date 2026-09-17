@@ -1,0 +1,75 @@
+const express = require("express");
+
+const app = express();
+app.use(express.json());
+
+// Student data
+let students = [
+    { id: 1, name: "Ravi", department: "CSE", age: 20 },
+    { id: 2, name: "Priya", department: "AIML", age: 19 }
+];
+
+// HOME
+app.get("/", (req, res) => {
+    res.send("Student Management System Backend Running");
+});
+
+// READ - Get all students
+app.get("/students", (req, res) => {
+    res.json(students);
+});
+
+// CREATE - Add student
+app.post("/students", (req, res) => {
+    const student = {
+        id: students.length + 1,
+        name: req.body.name,
+        department: req.body.department,
+        age: req.body.age
+    };
+
+    students.push(student);
+
+    res.json({
+        message: "Student added successfully",
+        student: student
+    });
+});
+
+// UPDATE - Update student
+app.put("/students/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+
+    const student = students.find(s => s.id === id);
+
+    if (!student) {
+        return res.status(404).json({
+            message: "Student not found"
+        });
+    }
+
+    student.name = req.body.name;
+    student.department = req.body.department;
+    student.age = req.body.age;
+
+    res.json({
+        message: "Student updated successfully",
+        student: student
+    });
+});
+
+// DELETE - Delete student
+app.delete("/students/:id", (req, res) => {
+    const id = parseInt(req.params.id);
+
+    students = students.filter(s => s.id !== id);
+
+    res.json({
+        message: "Student deleted successfully"
+    });
+});
+
+// Start server
+app.listen(3000, () => {
+    console.log("Server running at http://localhost:3000");
+});
